@@ -60,7 +60,7 @@ class LabelPdfProcessor
                 $parcelLabels[] = new ParcelLabel(
                     parcelno: $parcelNumber,
                     pdfPath: realpath($pdfPagePath),
-                    jpgPath: realpath($jpgPagePath)
+                    jpgPath: $jpgPagePath ? realpath($jpgPagePath) : null
                 );
             }
         }
@@ -85,8 +85,12 @@ class LabelPdfProcessor
         return null;
     }
 
-    private function convertPdfPageToJpg(string $pdfFilePath, int $pageNumber, string $outputPath): string
+    private function convertPdfPageToJpg(string $pdfFilePath, int $pageNumber, string $outputPath): ?string
     {
+        if (! class_exists('Imagick')) {
+            return null;
+        }
+
         $imagick = new Imagick;
         $imagick->setResolution(300, 300);
         $imagick->readImage($pdfFilePath);
